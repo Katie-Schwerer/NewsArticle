@@ -16,16 +16,15 @@ import {
 
 export default function FavoriteScreen() {
   const navigation = useNavigation();
-
-  // Assuming you have a similar structure for articles in your Redux store
   const favoriteArticles = useSelector((state) => state.favorites);
-  const favoriteArticlesList = favoriteArticles?.favoriteArticles || [];
+  const favoriteArticlesList = favoriteArticles.favoriteArticles || [];
 
+  // ---- EMPTY STATE ----
   if (favoriteArticlesList.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No favorite articles yet!</Text>
-        {/* add back button */}
+
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={{
@@ -34,7 +33,7 @@ export default function FavoriteScreen() {
             borderRadius: 5,
             marginTop: 10,
             width: 100,
-            alignItems: "center ",
+            alignItems: "center",
           }}
         >
           <Text style={{ color: "#fff" }}>Go back</Text>
@@ -43,21 +42,38 @@ export default function FavoriteScreen() {
     );
   }
 
+  // ---- FAVORITES EXIST ----
   return (
-    <>
-      {/* Heading */}
-      <View testID="FavoriteArticles">
-        <Text
-          style={{ fontSize: hp(3.8), marginTop: hp(4), marginLeft: 20 }}
-          className="font-semibold text-neutral-600"
-        >
-          My Favorite Articles
-        </Text>
-      </View>
-    
-     
-     
-    </>
+    <View style={{ flex: 1 }}>
+      <Text
+        style={{ fontSize: hp(3.8), marginTop: hp(4), marginLeft: 20 }}
+        className="font-semibold text-neutral-600"
+      >
+        My Favorite Articles
+      </Text>
+
+      <FlatList
+        data={favoriteArticlesList}
+        contentContainerStyle={styles.listContentContainer}
+        keyExtractor={(item) => item.idArticle}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.cardContainer}
+            onPress={() => navigation.navigate("ArticleDetail", item)}
+          >
+            <Image
+              source={{ uri: item.thumbnail }}
+              style={styles.articleImage}
+            />
+            <Text style={styles.articleTitle}>
+              {item.title.length > 20
+                ? `${item.title.slice(0, 20)}...`
+                : item.title}
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
   );
 }
 
